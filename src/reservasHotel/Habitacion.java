@@ -8,8 +8,12 @@ public class Habitacion {
 
     private String nombreHotel;
 
-    public Habitacion(int numeroHabitacion) {
+    private Hotel hotel;
+
+    public Habitacion(int numeroHabitacion, Hotel hotel) {
         this.numeroHabitacion = numeroHabitacion;
+        this.hotel = hotel;
+        this.nombreHotel = hotel.getNombreHotel();
         this.disponible = true;
     }
 
@@ -27,5 +31,9 @@ public class Habitacion {
 
     public String getNombreHotel() {
         return nombreHotel;
+    }
+
+    public Hotel getHotel() {
+        return hotel;
     }
 }

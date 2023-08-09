@@ -19,11 +19,14 @@ public class Main {
         hoteles.add(new Hotel("Hotel Miramar"));
 
         List<Habitacion> habitaciones = new ArrayList<>();
-        habitaciones.add(new Habitacion(101));
-        habitaciones.add(new Habitacion(201));
-        habitaciones.add(new Habitacion(301));
-        habitaciones.add(new Habitacion(401));
-        habitaciones.add(new Habitacion(501));
+        for (Hotel hotel : hoteles) {
+            habitaciones.add(new Habitacion(101, hotel));
+            habitaciones.add(new Habitacion(201, hotel));
+            habitaciones.add(new Habitacion(301, hotel));
+            habitaciones.add(new Habitacion(401, hotel));
+            habitaciones.add(new Habitacion(501, hotel));
+        }
+
 
         List<Cliente> clientes = new ArrayList<>();
         clientes.add(new Cliente("Microsoft"));
@@ -32,10 +35,12 @@ public class Main {
         clientes.add(new Cliente("Amazon"));
         clientes.add(new Cliente("Apple"));
 
+        List<Reserva> reservas = new ArrayList<>();
+
         while (true) {
             System.out.println("MENÚ PRINCIPAL");
             System.out.println("Por favor selecciona el número de la opción deseada");
-            System.out.println("1. Listar habitaciones disponibles");
+            System.out.println("1. Listar todas las reservas");
             System.out.println("2. Hacer reserva");
             System.out.println("3. Cancelar reserva");
             System.out.println("4. Salir");
@@ -44,13 +49,14 @@ public class Main {
 
             switch (opcion) {
                 case 1:
-                    listarHabitacionesDisponibles(hoteles, habitaciones, scanner);
+                    listarReservas(reservas);
+                    //listarHabitacionesDisponibles(hoteles, habitaciones, reservas, scanner);
                     break;
                 case 2:
-                    hacerReserva(hoteles, habitaciones, clientes, scanner);
+                    hacerReserva(hoteles, habitaciones, clientes, reservas, scanner);
                     break;
                 case 3:
-                    cancelarReserva(hoteles, scanner);
+                    cancelarReserva(hoteles, reservas, scanner);
                     break;
                 case 4:
                     System.out.println("Saliendo del programa...");
@@ -61,29 +67,27 @@ public class Main {
         }
     }
 
-    private static void listarHabitacionesDisponibles(List<Hotel> hoteles, List<Habitacion> habitaciones, Scanner scanner) {
-        System.out.println("Selecciona un hotel:");
-        for (int i = 0; i < hoteles.size(); i++) {
-            System.out.println((i + 1) + ". " + hoteles.get(i).getNombreHotel());
+    private static void listarReservas(List<Reserva> reservas) {
+        if (reservas.isEmpty()) {
+            System.out.println("No hay reservas realizadas.");
+            return;
         }
 
-        int hotelSeleccionado = scanner.nextInt();
-
-        if (hotelSeleccionado >= 1 && hotelSeleccionado <= hoteles.size()) {
-            Hotel hotel = hoteles.get(hotelSeleccionado - 1);
-            System.out.println("Habitaciones disponibles en " + hotel.getNombreHotel() + ":");
-            for (Habitacion habitacion : habitaciones) {
-                if (habitacion.isDisponible()) {
-                    System.out.println("Habitación " + habitacion.getNumeroHabitacion());
-                }
-            }
-        } else {
-            System.out.println("¡Selección de hotel inválida!");
+        System.out.println("Lista de reservas realizadas:");
+        for (Reserva reserva : reservas) {
+            System.out.println("Cliente: " + reserva.getCliente().getNombreEmpresa());
+            System.out.println("Huésped: " + reserva.getHuesped());
+            System.out.println("Cédula: " + reserva.getCedula());
+            System.out.println("Hotel: " + reserva.getHotel().getNombreHotel());
+            System.out.println("Habitación: " + reserva.getHabitacion().getNumeroHabitacion());
+            System.out.println("Check-In: " + reserva.getFechaCheckIn());
+            System.out.println("Check-Out: " + reserva.getFechaCheckOut());
+            System.out.println("Cancelada: " + (reserva.isCancelada() ? "Sí" : "No"));
+            System.out.println("---------------------------");
         }
     }
 
-    private static void hacerReserva(List<Hotel> hoteles, List<Habitacion> habitaciones, List<Cliente> clientes, Scanner scanner) {
-
+    private static void hacerReserva(List<Hotel> hoteles, List<Habitacion> habitaciones, List<Cliente> clientes, List<Reserva> reservas, Scanner scanner) {
         System.out.println("Selecciona el número que contiene el nombre de la empresa que hará la reserva:");
         listarClientes(clientes);
 
@@ -116,7 +120,7 @@ public class Main {
 
         System.out.println("Habitaciones disponibles para: " + hotel.getNombreHotel() + ":");
         for (Habitacion habitacion : habitaciones) {
-            if (habitacion.isDisponible()) {
+            if (habitacion.getNombreHotel().equals(hotel.getNombreHotel()) && habitacion.isDisponible()) {
                 System.out.println("Habitación " + habitacion.getNumeroHabitacion());
             }
         }
@@ -125,7 +129,7 @@ public class Main {
         int numeroHabitacion = scanner.nextInt();
 
         for (Habitacion habitacion : habitaciones) {
-            if (habitacion.getNumeroHabitacion() == numeroHabitacion) {
+            if (habitacion.getNumeroHabitacion() == numeroHabitacion && habitacion.getNombreHotel().equals(hotel.getNombreHotel())) {
                 if (!habitacion.isDisponible()) {
                     System.out.println("La habitación seleccionada no está disponible");
                     return;
@@ -145,8 +149,21 @@ public class Main {
                     fechaCheckIn = dateFormat.parse(fechaCheckInStr);
                     fechaCheckOut = dateFormat.parse(fechaCheckOutStr);
 
+                    if (!verificarDisponibilidad(reservas, habitacion, hotel, fechaCheckIn, fechaCheckOut)) {
+                        System.out.println("La habitación ya está reservada para las fechas seleccionadas.");
+                        return;
+                    }
+
                     Reserva reserva = new Reserva(cliente, hotel, habitacion, false, fechaCheckIn, fechaCheckOut);
                     habitacion.setDisponible(false);
+                    reserva.setCliente(cliente);
+                    reserva.setHuesped(nombreHuesped);
+                    reserva.setCedula(cedulaHuesped);
+                    reserva.setHotel(hotel);
+                    reserva.setHabitacion(habitacion);
+                    reserva.setFechaCheckIn(fechaCheckIn);
+                    reserva.setFechaCheckOut(fechaCheckOut);
+                    reservas.add(reserva);
 
                     System.out.println("¡Reserva realizada con éxito!");
                     System.out.println("Información de la reserva:");
@@ -169,6 +186,21 @@ public class Main {
         System.out.println("No se encontró la habitación " + numeroHabitacion + " en " + hotel.getNombreHotel());
     }
 
+
+    private static boolean verificarDisponibilidad(List<Reserva> reservas, Habitacion habitacion, Hotel hotel, Date fechaCheckIn, Date fechaCheckOut) {
+        for (Reserva reserva : reservas) {
+            if (reserva.getHabitacion().equals(habitacion) && reserva.getHotel().equals(hotel)) {
+                if (!reserva.isCancelada() &&
+                        fechaCheckIn.compareTo(reserva.getFechaCheckOut()) < 0 &&
+                        fechaCheckOut.compareTo(reserva.getFechaCheckIn()) > 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
     private static void listarClientes(List<Cliente> clientes) {
         for (int i = 0; i < clientes.size(); i++) {
             System.out.println((i + 1) + ". " + clientes.get(i).getNombreEmpresa());
@@ -181,7 +213,7 @@ public class Main {
         }
     }
 
-    private static void cancelarReserva(List<Hotel> hoteles, Scanner scanner) {
+    private static void cancelarReserva(List<Hotel> hoteles, List<Reserva> reservas, Scanner scanner) {
         System.out.println("Selecciona el número que contiene el nombre del hotel para cancelar la reserva: ");
         listarHoteles(hoteles);
 
@@ -194,30 +226,33 @@ public class Main {
 
         Hotel hotel = hoteles.get(hotelSeleccionado - 1);
 
-        List<Habitacion> habitacionesReservadas = new ArrayList<>();
+        System.out.println("Reservas en " + hotel.getNombreHotel() + ":");
 
-        for (Habitacion habitacion : hotel.getHabitaciones()) {
-            if (!habitacion.isDisponible()) {
-                habitacionesReservadas.add(habitacion);
+        List<Reserva> reservasEnHotel = new ArrayList<>();
+
+        for (Reserva reserva : reservas) {
+            if (reserva.getHotel().equals(hotel)) {
+                reservasEnHotel.add(reserva);
             }
         }
 
-        if (habitacionesReservadas.isEmpty()) {
+        if (reservasEnHotel.isEmpty()) {
             System.out.println("No hay habitaciones reservadas en " + hotel.getNombreHotel() + ".");
             return;
         }
 
-        System.out.println("Habitaciones reservadas en " + hotel.getNombreHotel() + ":");
-        for (Habitacion habitacion : habitacionesReservadas) {
-            System.out.println("Habitación " + habitacion.getNumeroHabitacion());
+        for (Reserva reserva : reservasEnHotel) {
+            System.out.println("Habitación " + reserva.getHabitacion().getNumeroHabitacion() + " - "
+                    + "Check-In: " + reserva.getFechaCheckIn() + ", Check-Out: " + reserva.getFechaCheckOut());
         }
 
-        System.out.println("Ingresa el número de la habitación que deseas cancelar:");
+        System.out.println("Ingresa el número de la habitación de la reserva que deseas cancelar:");
         int numeroHabitacion = scanner.nextInt();
 
-        for (Habitacion habitacion : habitacionesReservadas) {
-            if (habitacion.getNumeroHabitacion() == numeroHabitacion) {
-                habitacion.setDisponible(true);
+        for (Reserva reserva : reservasEnHotel) {
+            if (reserva.getHabitacion().getNumeroHabitacion() == numeroHabitacion) {
+                reserva.getHabitacion().setDisponible(true);
+                reserva.setCancelada(true);
                 System.out.println("¡Reserva cancelada con éxito para la habitación " + numeroHabitacion + " en " + hotel.getNombreHotel() + "!");
                 return;
             }
@@ -225,6 +260,5 @@ public class Main {
 
         System.out.println("No se encontró la habitación " + numeroHabitacion + " en " + hotel.getNombreHotel() + " o no está reservada.");
     }
-
 
 }

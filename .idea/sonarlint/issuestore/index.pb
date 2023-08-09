@@ -17,10 +17,10 @@ M
 src/registroAlumnos/Main.java,8\7\8753412531848f61bc2a8737c781e61c6f101f8e
 N
 src/reservasHotel/Cliente.java,e\a\eaeae4173e15b2b3b5ae939519a7dcb07829eff4
-N
-src/reservasHotel/Reserva.java,b\c\bc8f1ca03aa1fa171f70dd8c3202513c4036d92c
 L
 src/reservasHotel/Hotel.java,b\9\b9cc275915e82b3feeb18bbd0b15b74293e04946
+N
+src/reservasHotel/Reserva.java,b\c\bc8f1ca03aa1fa171f70dd8c3202513c4036d92c
 Q
 !src/reservasHotel/Habitacion.java,2\3\23d8b69f1756b7a794ea5f1c143a3ee9f617d45e
 K
