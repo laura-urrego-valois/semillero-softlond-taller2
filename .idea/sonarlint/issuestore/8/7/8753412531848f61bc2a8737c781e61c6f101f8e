@@ -1,0 +1,12 @@
+
+j
+java:S1192	"HDefine a constant instead of duplicating this literal "Alberto" 4 times.(æˆñÍûÿÿÿÿ8‹²•1
+i
+java:S1192"GDefine a constant instead of duplicating this literal "Carlos" 4 times.(ûéğ¯ıÿÿÿÿ8‹²•1
+f
+java:S1192"IDefine a constant instead of duplicating this literal "Fernanda" 4 times.(Œ„½İ8‹²•1
+j
+java:S1192
+"HDefine a constant instead of duplicating this literal "Daniela" 4 times.(ş²…„øÿÿÿÿ8‹²•1
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ÂèÇúÿÿÿÿ8’‹²•1
+Z	java:S106"9Replace this use of System.out or System.err by a logger.(ÔÎÃ¾ıÿÿÿÿ8‹²•1
