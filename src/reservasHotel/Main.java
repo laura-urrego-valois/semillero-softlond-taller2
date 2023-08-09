@@ -50,7 +50,6 @@ public class Main {
             switch (opcion) {
                 case 1:
                     listarReservas(reservas);
-                    //listarHabitacionesDisponibles(hoteles, habitaciones, reservas, scanner);
                     break;
                 case 2:
                     hacerReserva(hoteles, habitaciones, clientes, reservas, scanner);
